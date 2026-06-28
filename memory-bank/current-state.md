@@ -9,3 +9,9 @@
 - **Seguridad:** El backend tiene una configuración CORS insegura (`allow_origins=["*"]` con credenciales) que debe ser parchada inmediatamente.
 - **Confiabilidad:** Las peticiones asíncronas en el frontend carecen de cancelación (`AbortController`) y de un manejo de errores robusto, lo que destruye la traza del error en la UI.
 - **Mantenibilidad:** Existen *Magic Strings* y estilos *hardcodeados* (como el modo oscuro forzado) que deben extraerse a archivos de configuración globales.
+
+## Aplicación de Skills
+- **Skill aplicada:** `performance`.
+- **Motivo:** El build de frontend reportó advertencia por chunk JS grande, y los componentes de gráficos (`recharts`) concentran buena parte del peso inicial.
+- **Acción implementada:** Code splitting con `React.lazy` + `Suspense` en la vista principal para cargar `IncomeOutcomeChart` y `ProfitPercentChart` bajo demanda.
+- **Impacto esperado:** Menor tamaño del bundle inicial y mejora del tiempo de carga percibido del dashboard.

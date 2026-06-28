@@ -1,4 +1,4 @@
-# Skill: Analizar Movimientos Financieros
+# Analizar Movimientos Financieros
 
 ## Descripción
 Esta habilidad permite al agente de IA procesar e interpretar la estructura de datos de los movimientos financieros (`FinancialMovement`) del Dashboard.

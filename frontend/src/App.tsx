@@ -1,10 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { KPIRow } from "@/components/dashboard/kpi-row";
 import {
   type FinancialMovement,
-  type KPIMetrics,
-  type MonthlyDataPoint,
 } from "@/lib/financial-types";
 import { computeKPIs, computeMonthlyData } from "@/lib/financial-utils";
 
@@ -31,26 +30,29 @@ async function fetchFinancialData(): Promise<FinancialMovement[]> {
 }
 
 function App() {
-  const [metrics, setMetrics] = useState<KPIMetrics | null>(null);
-  const [monthlyData, setMonthlyData] = useState<MonthlyDataPoint[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: movements,
+    isPending: loading,
+    isError,
+  } = useQuery({
+    queryKey: ["financial-metrics"],
+    queryFn: fetchFinancialData,
+    staleTime: 60_000,
+  });
 
-  useEffect(() => {
-    fetchFinancialData()
-      .then((movements) => {
-        setMetrics(computeKPIs(movements));
-        setMonthlyData(computeMonthlyData(movements));
-      })
-      .catch(() => {
-        setError(
-          "No se pudo cargar la informacion financiera. Revisa la API de backend.",
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+  const metrics = useMemo(
+    () => (movements ? computeKPIs(movements) : null),
+    [movements],
+  );
+
+  const monthlyData = useMemo(
+    () => (movements ? computeMonthlyData(movements) : []),
+    [movements],
+  );
+
+  const error = isError
+    ? "No se pudo cargar la informacion financiera. Revisa la API de backend."
+    : null;
 
   return (
     <main className="dark min-h-screen bg-background text-foreground">
